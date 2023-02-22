@@ -30,37 +30,3 @@ app.listen("3000", async () => {
   console.log("server is runnig");
 });
 
-
-
-
-
-
-
-
-
-
-// //OQ FALTA NO PROJETO 
-// app.post("/developers", createDeveloper); ------------------------------------------ FUNCIONANDO
-// app.get("/developers", readAllDevelopers); ------------------------------------------FUNCIONANDO
-// app.get("/developers/:id", ensuranceDevelopersExists, readDeveloperById); ---------- FUNCIONANDO
-// app.delete --- DELETAR USUARIO E VERIFICAR SE ID EXISTE ---------------------------- FUNCIONANDO
-// app.post("/developers/:id/infos",ensuranceDevelopersExists, createDeveloperInfo);--- FUNCIONANDO
-// app.get("/developers/:id/projects", ensuranceDevelopersExists);  ------------------- FUNCIONANDO
-// app.patch("/developers/:id", ensuranceDevelopersExists);---------------------------- FUNCIONANDO
-// app.patch("/developers/:id/infos", ensuranceDevelopersExists,); -------------------- CRIAR ROTA 
-
-// app.post("/projects", createProject);  ---------------- FUNCIONANDO
-// app.get("/projects", readAllProjects); ---------------- FUNCIONANDO
-// app.get("/projects/:id"); ----------------------------- FUNCIONANDO
-// app.delete("/projects/:id"); -------------------------- FUNCIONANDO
-// app.patch("/projects/:id"); --------------------------- FUNCIONANDO
-// app.post("/developers/:id/technologies"); ------------- FUNCIONANDO 
-// app.delete("/developers/:id/technologies/name"); ------ CRIAR ROTA 
-
-
-// TRATAR: 
-// INPUTS DE PATCHS E POSTS
-// VERIFICAR SE ALGUNS ID RELACIONAIS EXISTEM 
-// RESOLVER ALGUMAS TIPAGENS NAO FEITAS
-// CRIAR TRY CATHC PARA DEV INFOS PARA PEGAR ERROS
-// ADICIONAR IMAGEM DIAGRAMA

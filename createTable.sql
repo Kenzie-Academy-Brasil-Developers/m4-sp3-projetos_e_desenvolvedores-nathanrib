@@ -46,3 +46,8 @@ FOREIGN KEY ("technologyId") REFERENCES technologies ("id")
 );
 
 SELECT * FROM developers;
+
+ALTER TABLE developers ADD CONSTRAINT unique_email_constraint UNIQUE (email);
+
+ALTER TABLE developer_infos
+ALTER COLUMN "developerSince" SET DEFAULT CURRENT_DATE;

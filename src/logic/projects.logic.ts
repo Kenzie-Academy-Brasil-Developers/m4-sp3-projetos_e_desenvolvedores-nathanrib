@@ -6,54 +6,17 @@ import { IProjectRequest, IProjectTechnologiesRequest, IProjectTechnologiesResul
 
 
 
-// const validateDataPurchaseList = (payload: any): IPurchaseListResquest => {
-    
-//   const keys: Array<string> = Object.keys (payload)
-//   const dataKeys: Array<string> = payload.data.map((el:Array<string>) => Object.keys(el))
-//   const dataValues: Array<string> = payload.data.map((el:Array<string>) => Object.values(el))
-//   const requiredKeys: Array<IPurchaseListRequiredKeys> = ["listName", "data"]
-//   const requiredData: Array<IPurchaseListRequiredData> = ['name', 'quantity']
-
-  
-//    const containsAllListRequired: boolean = requiredKeys.every((key: string)=>{
-//       return keys.includes(key)
-//    })
-  
-
-//   let dataRequiredIsOk: boolean = true
-//     dataKeys.forEach((dataKey)=> {
-//     if(JSON.stringify(dataKey) !== JSON.stringify(requiredData)){
-//        dataRequiredIsOk = false
-//     }
-//   })
-
-//    if(!containsAllListRequired){
-//   throw new Error (`required keys are ${requiredKeys}`)
-//    }
-
-//    if(!dataRequiredIsOk){
-//       throw new Error (`required keys are ${requiredData}`)
-//   }
-
-//   dataValues.forEach((dataValue)=> {
-//       if(typeof dataValue[0] !== 'string'  || typeof dataValue[1] !== 'string'){
-//           throw new Error (`the values of data must be a string type `)
-//       }
-//   })
-
-//   dataValues.forEach((dataValue)=> {
-//       if(dataValue[0].length <= 0 || dataValue[1].length <= 0){
-//           throw new Error (`the values of data can not be empty `)
-//       }
-//   })
-  
-//    return payload
-// }
-
 
 const createProject = async ( req: Request, res: Response): Promise<Response> => {
-  
+  try{ 
   const projectData: IProjectRequest = req.body
+  const requiredKeys = ["name", "description", "estimatedTime", "repository", "startDate", "endDate","developerId"]
+  const developerInfoKeys = Object.keys(projectData)
+  if(developerInfoKeys.length > 7 || developerInfoKeys.length === 0 ){
+    throw new Error (`required keys are : ${requiredKeys} and you can also send endDate`)
+  }
+
+
 
   const queryString: string = format(
     `
@@ -70,6 +33,21 @@ const createProject = async ( req: Request, res: Response): Promise<Response> =>
   
 
   return res.status(201).json(queryResult.rows[0])
+  } catch(error){
+
+    if(error instanceof Error){
+      if(error.message ==  "insert or update on table \"projects\" violates foreign key constraint \"projects_developerId_fkey\""){
+        return res.status(404).json({message: "developer ID not found" })
+      }
+        return res.status(400).json({
+            message: error.message
+        })
+    }
+    return res.status(500).json({
+        message: 'internal server error'
+    })
+}
+
 };
 
 const readAllProjects = async (req: Request, res: Response): Promise<Response> =>{
@@ -150,6 +128,12 @@ const updateProject = async (req: Request, res: Response): Promise<Response> => 
   const projectId: number = parseInt(req.params.id);
   const projectReqValues = Object.values(req.body);
   const projectReqKeys = Object.keys(req.body);
+  const requiredKeys = ["name", "description", "estimatedTime", "repository", "startDate", "endDate","developerId"]
+
+  if(projectReqKeys.length > 7 || projectReqKeys.length === 0 ){
+    throw new Error (` required keys are : ${requiredKeys} and you can also send endDate`)
+  }
+
 
   const queryString: string = format(
     `
@@ -184,6 +168,8 @@ const createTechToPoject = async (req: Request, res: Response): Promise<Response
     const projectId: number = parseInt(req.params.id)
     const projectsTechnologiesData: IProjectTechnologiesRequest = req.body
 
+
+
     let queryString = `
     SELECT * FROM TECHNOLOGIES WHERE NAME = $1;
     `
@@ -198,13 +184,13 @@ const createTechToPoject = async (req: Request, res: Response): Promise<Response
     }
 
     queryString = `
-    INSERT INTO projects_techonologies ("projectID", "technologyId", "addedIn" ) VALUES ($1,$2,$3) RETURNING *;
+    INSERT INTO projects_techonologies ("projectID", "technologyId", "addedIn" ) VALUES ($1,$2, NOW()) RETURNING *;
     `
     const technologyId = queryResultTechnologies.rows[0].id
 
     queryConfig ={
       text: queryString,
-      values:[projectId, technologyId,projectsTechnologiesData.addedIn ]
+      values:[projectId, technologyId]
     }
    
     const queryResultProjectsTechnologies: IProjectTechnologiesResult = await client.query(queryConfig)
